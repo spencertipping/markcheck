@@ -6,7 +6,7 @@ links. This is a bummer, so I wrote this thing to fix it.
 
 ## Usage
 ```sh
-$ find -name '*.md' | xargs markcheck
+$ markcheck
 ```
 
 
