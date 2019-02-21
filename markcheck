@@ -3,29 +3,43 @@ use strict;
 use warnings;
 use v5.14;
 
+use Cwd qw/abs_path/;
 use File::Find;
 
-our $current_md  = "";
-our $any_missing = 0;
+our $problems = 0;
+our @markdowns;
+our %targets;
 
-sub missing
-{
-  $any_missing = 1;
-  printf "%s:%d: missing link to %s\n", "$File::Find::dir/$current_md", $., $_;
-}
-
-sub each
+sub scan_links
 {
   return 1 unless /\.md$/i;
-  my $fenced = 0;
-  open my $fh, "<", $current_md = $_ or die "failed to open markdown $_: $!";
+
+  my $md = $_;
+  open my $fh, "<", $_ or die "failed to open markdown $_: $!";
+  push @markdowns, abs_path $_ unless /^readme\./i;
+
   while (<$fh>)
   {
-    $fenced &&= !/\`\`\`/;
-    next if $fenced ||= /\`\`\`/;
-    -e or /^#/ or /^\w+:\/\// or missing for /\]\(([^)]+)\)/g;
-  }
-};
+    next if /^\`\`\`/.../^\`\`\`/;
 
-find \&each, ".";
-exit $any_missing;
+    for (/\]\(([^)]+)\)/g)
+    {
+      next if /^#/ or /^\w+:\/\//;
+      if (-e)
+      {
+        ++$targets{abs_path $_};
+      }
+      else
+      {
+        ++$problems;
+        printf "%s:%d: invalid link to %s\n", "$File::Find::dir/$md", $., $_;
+      }
+    }
+  }
+}
+
+find \&scan_links, $_ for @ARGV ? @ARGV : ".";
+++$problems, printf "%s is orphaned\n", $_
+  for grep !$targets{$_}, @markdowns;
+
+exit !!$problems;
