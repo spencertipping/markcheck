@@ -25,7 +25,7 @@ Markcheck is [barely] tested with
 ```bash
 $ ./markcheck; echo $?
 ./README.md:32: invalid link to should-be-missing
-/home/spencertipping/r/public/markcheck/orphaned.md is orphaned
+./orphaned.md is orphaned
 1
 ```
 

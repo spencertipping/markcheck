@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use v5.14;
 
-use Cwd qw/abs_path/;
+use Cwd qw/cwd abs_path/;
 use File::Find;
 
 our $problems = 0;
@@ -39,7 +39,9 @@ sub scan_links
 }
 
 find \&scan_links, $_ for @ARGV ? @ARGV : ".";
-++$problems, printf "%s is orphaned\n", $_
+
+my $cwd = cwd;
+++$problems, printf "%s is orphaned\n", s/^$cwd/./r
   for grep !$targets{$_}, @markdowns;
 
 exit !!$problems;
